@@ -29,6 +29,8 @@ var adminEmails = (builder.Configuration.GetSection("Security:AdminEmails").Get<
 	.Where(x => !string.IsNullOrWhiteSpace(x))
 	.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+var requireActiveSubscription = builder.Configuration.GetValue("Billing:RequireActiveSubscription", true);
+
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<VendorDataStore>();
 builder.Services.AddSingleton<PriceCertificationEngine>();
@@ -222,7 +224,7 @@ app.MapPost("/api/parts/search", async (PartSearchRequest request, HttpContext c
 		return Results.Unauthorized();
 
 	var profile = await store.GetUserProfileAsync(userId, cancellationToken);
-	if (profile is null || !profile.IsSubscriptionActive || profile.SubscriptionTier == "None")
+	if (requireActiveSubscription && (profile is null || !profile.IsSubscriptionActive || profile.SubscriptionTier == "None"))
 		return Results.Json(new { error = "No active subscription. Please purchase a plan to search.", code = "subscription_required" }, statusCode: 402);
 
 	var result = await resolver.SearchAsync(request, cancellationToken);
