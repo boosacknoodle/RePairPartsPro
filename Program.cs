@@ -217,7 +217,7 @@ app.MapPost("/api/auth/reset-password", async (ResetPasswordRequest request, Ven
 	return Results.Ok(new { message = "Password reset complete." });
 });
 
-app.MapPost("/api/parts/search", async (PartSearchRequest request, HttpContext context, VendorDataStore store, MarketplacePricingResolverService resolver, CancellationToken cancellationToken) =>
+app.MapPost("/api/parts/search", async (PartSearchRequest request, HttpContext context, VendorDataStore store, MarketplacePricingResolverService resolver, ILogger<Program> logger, CancellationToken cancellationToken) =>
 {
 	var userIdClaim = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 	if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
@@ -227,10 +227,29 @@ app.MapPost("/api/parts/search", async (PartSearchRequest request, HttpContext c
 	if (requireActiveSubscription && (profile is null || !profile.IsSubscriptionActive || profile.SubscriptionTier == "None"))
 		return Results.Json(new { error = "No active subscription. Please purchase a plan to search.", code = "subscription_required" }, statusCode: 402);
 
-	var result = await resolver.SearchAsync(request, cancellationToken);
-	var queryText = string.Join(" ", new[] { request.Brand, request.Model, request.PartType }.Where(x => !string.IsNullOrWhiteSpace(x)));
-	await store.TrackSearchAnalyticsAsync(userId, string.IsNullOrWhiteSpace(queryText) ? "(blank)" : queryText, result.Listings.Count > 0, cancellationToken);
-	return Results.Ok(result);
+	try
+	{
+		var result = await resolver.SearchAsync(request, cancellationToken);
+		var queryText = string.Join(" ", new[] { request.Brand, request.Model, request.PartType }.Where(x => !string.IsNullOrWhiteSpace(x)));
+		await store.TrackSearchAnalyticsAsync(userId, string.IsNullOrWhiteSpace(queryText) ? "(blank)" : queryText, result.Listings.Count > 0, cancellationToken);
+		return Results.Ok(result);
+	}
+	catch (Exception ex)
+	{
+		logger.LogError(ex, "Search failed for user {UserId}", userId);
+		return Results.Ok(new PartSearchResult
+		{
+			Brand = request.Brand,
+			Model = request.Model,
+			PartType = request.PartType,
+			RetrievedAtUtc = DateTime.UtcNow,
+			QualityPromise = "Search is temporarily degraded. Please retry in a moment.",
+			TotalOffersScanned = 0,
+			HardToFindMatches = 0,
+			Listings = new List<PartListing>(),
+			RejectedListings = new List<RejectedPartListing>()
+		});
+	}
 }).RequireAuthorization();
 
 app.MapPost("/api/stripe/checkout", async (HttpContext context, VendorDataStore store, IConfiguration config, CancellationToken cancellationToken) =>
