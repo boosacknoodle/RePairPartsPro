@@ -106,8 +106,8 @@ using (var scope = app.Services.CreateScope())
 	if (app.Environment.IsDevelopment())
 	{
 		await store.SeedIfEmptyAsync();
-		await store.EnsureMarketplaceCoverageAsync();
 	}
+	await store.EnsureMarketplaceCoverageAsync();
 }
 
 app.UseForwardedHeaders();
