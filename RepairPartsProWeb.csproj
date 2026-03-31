@@ -4,6 +4,24 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>RepairPartsProWeb-2f8dcb7f-3b20-4f53-bf59-9f2523350d8a</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="RepairPartsWebApp\**" />
+    <Compile Remove="RepairPartsPro.Tests\**" />
+    <EmbeddedResource Remove="RepairPartsWebApp\**" />
+    <EmbeddedResource Remove="RepairPartsPro.Tests\**" />
+    <None Remove="RepairPartsWebApp\**" />
+    <None Remove="RepairPartsPro.Tests\**" />
+    <Content Remove="RepairPartsWebApp\**" />
+    <Content Remove="RepairPartsPro.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.8" />
+    <PackageReference Include="Stripe.net" Version="51.0.0" />
+  </ItemGroup>
 
 </Project>

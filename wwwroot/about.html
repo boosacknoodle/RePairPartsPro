@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About Us – RepairPartsPro</title>
+  <style>
+    :root {
+      --bg: #0b122b;
+      --surface: #121e44;
+      --text: #e7efff;
+      --muted: #b2c2ea;
+      --border: rgba(128, 160, 232, 0.3);
+      --accent: #2f7df6;
+      --danger: #b91c1c;
+      --trace: rgba(74, 145, 255, 0.2);
+      --node: rgba(251, 191, 36, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 26%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 70% 62%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 84% 18%, var(--node) 0 1.6px, transparent 1.6px),
+        radial-gradient(900px 520px at 12% 8%, rgba(47, 125, 246, 0.24), transparent 62%),
+        radial-gradient(820px 480px at 92% -4%, rgba(245, 158, 11, 0.2), transparent 58%),
+        repeating-linear-gradient(90deg, transparent 0 56px, var(--trace) 56px 58px, transparent 58px 116px),
+        repeating-linear-gradient(0deg, transparent 0 60px, var(--trace) 60px 62px, transparent 62px 120px),
+        linear-gradient(180deg, #0d1530 0%, var(--bg) 100%);
+      color: var(--text);
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, transparent 22%, rgba(74, 145, 255, 0.12) 22% 24%, transparent 24% 68%, rgba(74, 145, 255, 0.12) 68% 70%, transparent 70%),
+        linear-gradient(45deg, transparent 18%, rgba(245, 158, 11, 0.1) 18% 19.5%, transparent 19.5% 82%, rgba(245, 158, 11, 0.1) 82% 83.5%, transparent 83.5%);
+      opacity: 0.34;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px 14px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .btn-nav {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      line-height: 30px;
+    }
+
+    .btn-nav:hover { border-color: #93c5fd; color: #93c5fd; }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+
+    /* Mission / Hard Part Promise */
+    .mission {
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      background: linear-gradient(120deg, rgba(47, 125, 246, 0.15), rgba(245, 158, 11, 0.12));
+    }
+
+    .mission h2 {
+      margin: 0 0 10px;
+      font-size: 1.45rem;
+      color: var(--text);
+    }
+
+    .mission p {
+      margin: 0;
+      color: #fde68a;
+      font-weight: 600;
+      line-height: 1.55;
+      font-size: 1rem;
+    }
+
+    /* Page header */
+    .page-header h1 {
+      margin: 0 0 6px;
+      font-size: 1.7rem;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.97rem;
+    }
+
+    /* Section headings */
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+      color: var(--text);
+    }
+
+    .panel p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .panel p:last-child { margin-bottom: 0; }
+
+    /* Three-column stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .stat-card {
+      background: #182854;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #f59e0b;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    /* How-it-works steps */
+    .steps {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2f7df6, #f59e0b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+
+    .step-body h3 {
+      margin: 0 0 4px;
+      font-size: 0.97rem;
+      color: var(--text);
+    }
+
+    .step-body p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Pill tags */
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .tag-green {
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      color: #86efac;
+    }
+
+    .tag-yellow {
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      color: #fcd34d;
+    }
+
+    .tag-blue {
+      border: 1px solid rgba(147, 197, 253, 0.45);
+      color: #93c5fd;
+    }
+
+    /* Pledge list */
+    .pledge-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .pledge-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.93rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .pledge-list li::before {
+      content: "✓";
+      flex-shrink: 0;
+      font-weight: 800;
+      color: #34d399;
+      font-size: 1rem;
+      margin-top: 1px;
+    }
+
+    a { color: #93c5fd; }
+
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .stat-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+
+    <!-- Nav bar -->
+    <div class="auth-bar">
+      <span class="user-pill" id="userPill"></span>
+      <div style="display:flex;gap:8px;">
+        <a href="/index.html" class="btn-nav">Search</a>
+        <a href="/profile.html" class="btn-nav">Profile</a>
+        <button class="btn-nav" id="signOutBtn" type="button">Sign out</button>
+      </div>
+    </div>
+
+    <!-- Page header -->
+    <section class="panel page-header">
+      <h1>About RepairPartsPro</h1>
+      <p>We were built for repair technicians who refuse to let a hard-to-find part end a job.</p>
+    </section>
+
+    <!-- Hard Part Promise (from image) -->
+    <section class="panel mission">
+      <h2>Hard Part Promise</h2>
+      <p>No repair part is out of reach. We pursue rare and difficult parts, then publish only listings that pass anti-scam and genuine verification checks.</p>
+    </section>
+
+    <!-- By the numbers -->
+    <section class="panel">
+      <h2>By the Numbers</h2>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Scam-screened listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">30+</div>
+          <div class="stat-label">Marketplaces monitored</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">8+</div>
+          <div class="stat-label">Known hard-part families tracked</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Who we are -->
+    <section class="panel">
+      <h2>Who We Are</h2>
+      <p>
+        RepairPartsPro was created by repair professionals who were tired of wasting hours chasing counterfeit
+        components, dead links, and inflated pricing. We built the tool we always wished existed: a single
+        search that scans every major marketplace simultaneously, scores each result for authenticity, and
+        surfaces only listings that earn a genuine certification.
+      </p>
+      <p>
+        We specialize in the parts most platforms quietly give up on — discontinued ICs, proprietary flex
+        cables, donor boards, and anything a forum thread marks as "nearly impossible." If it can be found,
+        we find it.
+      </p>
+      <div class="tag-row">
+        <span class="tag tag-green">Genuine Parts Only</span>
+        <span class="tag tag-yellow">Hard-to-Find Specialists</span>
+        <span class="tag tag-blue">Repair Community Driven</span>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="panel">
+      <h2>How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>You Search Once</h3>
+            <p>Enter any part number, device model, or component description. RepairPartsPro fans that query out to every connected marketplace in parallel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>We Certify Every Offer</h3>
+            <p>Each result is run through our <strong style="color:var(--text)">Price Certification Engine</strong>, which strips aftermarket knockoffs, flags scam-signal language, and validates the seller's source type before the listing ever reaches you.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Rarity &amp; Authenticity Scoring</h3>
+            <p>Listings are ranked by a rarity score built from peer price variance, forum pain-intel matches, and scam-signal penalties. Hard-to-find parts bubble to the top, not paid placements.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>Background Pain-Intel Matching</h3>
+            <p>We continuously monitor repair community forums for parts that shops repeatedly struggle to source. Those signals silently boost scoring accuracy so you benefit from collective repair knowledge without any extra steps.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <h3>You Get a Verified Result</h3>
+            <p>Only listings that pass authenticity checks appear. Every result shows a trust note, verification timestamp, and the price source so you can make a confident purchase.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Our pledge -->
+    <section class="panel">
+      <h2>Our Pledge to the Repair Community</h2>
+      <ul class="pledge-list">
+        <li>We will never surface a listing we cannot stand behind — if it looks like a knockoff, it gets rejected, not ranked lower.</li>
+        <li>We treat "discontinued," "obsolete," and "rare" as a challenge to solve, not a reason to return zero results.</li>
+        <li>We absorb repair community pain signals in real time so our scoring reflects what shops are actually struggling to find today.</li>
+        <li>We keep pricing transparent — every result shows the source type, whether live marketplace data, dealer estimate, or reference pricing.</li>
+        <li>We will never charge commission or accept paid placements that change the order of genuine results.</li>
+      </ul>
+    </section>
+
+    <!-- Plans -->
+    <section class="panel">
+      <h2>Plans Built for Shops</h2>
+      <p>
+        Two straightforward tiers — no lock-in, no hidden fees. <strong style="color:var(--text)">Basic ($10.99/mo)</strong> gives
+        you full search access and genuine certification on every result.
+        <strong style="color:var(--text)">Pro ($24.99/mo)</strong> unlocks priority scanning, extended history, and priority
+        support for high-volume repair operations. <a href="/profile.html">Manage your plan →</a>
+      </p>
+    </section>
+
+    <section class="panel" style="text-align:center;font-size:0.88rem;color:#b2c2ea;">
+      <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a> | <a href="/contact.html">Contact</a>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      const token = localStorage.getItem('rpp_token');
+      if (!token) {
+        window.location.replace('/login.html');
+        return;
+      }
+      const email = localStorage.getItem('rpp_email') || '';
+      document.getElementById('userPill').textContent = email;
+      document.getElementById('signOutBtn').addEventListener('click', () => {
+        localStorage.removeItem('rpp_token');
+        localStorage.removeItem('rpp_email');
+        window.location.replace('/login.html');
+      });
+    })();
+  </script>
+</body>
+</html>

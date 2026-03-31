@@ -1,0 +1,12 @@
+bin/
+obj/
+.git/
+.gitignore
+.vs/
+.vscode/
+RepairPartsWebApp/
+RepairPartsPro.Tests/
+backups/
+*.db
+*.db-shm
+*.db-wal

@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RepairPartsPro</title>
+  <style>
+    :root {
+      --bg: #0b122b;
+      --surface: #121e44;
+      --text: #e7efff;
+      --muted: #b2c2ea;
+      --border: rgba(128, 160, 232, 0.3);
+      --accent: #2f7df6;
+      --danger: #b91c1c;
+      --trace: rgba(74, 145, 255, 0.2);
+      --node: rgba(251, 191, 36, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 26%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 70% 62%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 84% 18%, var(--node) 0 1.6px, transparent 1.6px),
+        radial-gradient(900px 520px at 12% 8%, rgba(47, 125, 246, 0.24), transparent 62%),
+        radial-gradient(820px 480px at 92% -4%, rgba(245, 158, 11, 0.2), transparent 58%),
+        repeating-linear-gradient(90deg, transparent 0 56px, var(--trace) 56px 58px, transparent 58px 116px),
+        repeating-linear-gradient(0deg, transparent 0 60px, var(--trace) 60px 62px, transparent 62px 120px),
+        linear-gradient(180deg, #0d1530 0%, var(--bg) 100%);
+      color: var(--text);
+      background-attachment: fixed;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, transparent 22%, rgba(74, 145, 255, 0.12) 22% 24%, transparent 24% 68%, rgba(74, 145, 255, 0.12) 68% 70%, transparent 70%),
+        linear-gradient(45deg, transparent 18%, rgba(245, 158, 11, 0.1) 18% 19.5%, transparent 19.5% 82%, rgba(245, 158, 11, 0.1) 82% 83.5%, transparent 83.5%);
+      opacity: 0.34;
+      z-index: 0;
+    }
+
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 24px 14px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .mission {
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      background: linear-gradient(120deg, rgba(47, 125, 246, 0.15), rgba(245, 158, 11, 0.12));
+    }
+
+    .mission p {
+      margin: 8px 0 0;
+      color: #fde68a;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.55rem;
+    }
+
+    .sub {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 38px;
+      padding: 8px 10px;
+      font: inherit;
+      color: var(--text);
+      background: #182854;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: 1px solid var(--accent);
+      background: linear-gradient(105deg, #2f7df6, #f59e0b);
+      color: #fff;
+      border-radius: 8px;
+      min-height: 38px;
+      padding: 0 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    #status {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .listing {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      background: #16244e;
+    }
+
+    .rejected-wrap {
+      margin-top: 14px;
+      border-top: 1px dashed var(--border);
+      padding-top: 10px;
+    }
+
+    .rejected-item {
+      border: 1px solid rgba(185, 28, 28, 0.4);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      background: rgba(127, 29, 29, 0.22);
+    }
+
+    .rejected-reason {
+      color: #fecaca;
+      font-weight: 600;
+      margin: 4px 0;
+    }
+
+    .listing-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 8px;
+      background: #0f1737;
+    }
+
+    .thumb-row {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .thumb {
+      width: 70px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      opacity: 0.85;
+    }
+
+    .thumb.active {
+      outline: 2px solid #f59e0b;
+      opacity: 1;
+    }
+
+    .listing h3 {
+      margin: 0 0 4px;
+      font-size: 1rem;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .verify {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      color: #86efac;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .rarity-badge {
+      display: inline-block;
+      margin-top: 6px;
+      margin-left: 6px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.55);
+      color: #fcd34d;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .price {
+      margin: 8px 0 0;
+      font-weight: 700;
+    }
+
+    .error {
+      color: #fecaca;
+      font-weight: 600;
+    }
+
+    a {
+      color: #93c5fd;
+    }
+
+    .auth-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .btn-signout {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .btn-signout:hover { border-color: #93c5fd; color: #93c5fd; }
+
+    .btn-profile {
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
+      min-height: 30px;
+      padding: 0 10px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-profile:hover { border-color: #93c5fd; color: #93c5fd; }
+
+    @media (max-width: 760px) {
+      .search-row {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="auth-bar">
+      <span class="user-pill" id="userPill"></span>
+      <div style="display:flex;gap:8px;">
+        <a href="/about.html" class="btn-profile">About</a>
+        <a href="/analytics.html" class="btn-profile">Analytics</a>
+        <a href="/contact.html" class="btn-profile">Contact</a>
+        <a href="/profile.html" class="btn-profile">Profile</a>
+        <button class="btn-signout" id="signOutBtn" type="button">Sign out</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <h1>RepairPartsPro</h1>
+      <p class="sub">Search genuine parts in one line. Results stay in RepairPartsPro with verified pricing records.</p>
+    </section>
+
+    <section class="panel mission">
+      <h1>Hard Part Promise</h1>
+      <p>No repair part is out of reach. We pursue rare and difficult parts, then publish only listings that pass anti-scam and genuine verification checks.</p>
+    </section>
+
+    <section class="panel">
+      <form id="searchForm">
+        <div class="field">
+          <label for="query">What are you looking for?</label>
+          <div class="search-row">
+            <input id="query" name="query" type="text" value="Dell XPS 15 battery" placeholder="Example: ASUS B550-F motherboard" required />
+            <button type="submit">Search</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <span id="status">Ready</span>
+        </div>
+      </form>
+    </section>
+
+    <section id="results" class="panel">
+      No results yet.
+    </section>
+
+    <section class="panel" style="text-align:center;font-size:0.88rem;color:#b2c2ea;">
+      <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a> | <a href="/contact.html">Contact</a>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      const token = localStorage.getItem('rpp_token');
+      if (!token) {
+        window.location.replace('/login.html');
+        return;
+      }
+      const email = localStorage.getItem('rpp_email') || '';
+      document.getElementById('userPill').textContent = email;
+      document.getElementById('signOutBtn').addEventListener('click', () => {
+        localStorage.removeItem('rpp_token');
+        localStorage.removeItem('rpp_email');
+        window.location.replace('/login.html');
+      });
+    })();
+
+    const form = document.getElementById('searchForm');
+    const results = document.getElementById('results');
+    const status = document.getElementById('status');
+    const queryInput = document.getElementById('query');
+
+    function usd(value) {
+      const n = Number(value || 0);
+      return n.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+
+    function renderListings(payload) {
+      const listings = payload && Array.isArray(payload.listings) ? payload.listings : [];
+      const rejectedListings = payload && Array.isArray(payload.rejectedListings) ? payload.rejectedListings : [];
+      const qualityPromise = String((payload && payload.qualityPromise) || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const totalScanned = Number((payload && payload.totalOffersScanned) || 0);
+      const hardMatches = Number((payload && payload.hardToFindMatches) || 0);
+
+      const listingsHtml = listings.length === 0
+        ? '<p>No certified listings found yet. We keep hunting across marketplaces for hard-to-find genuine options.</p>'
+        : listings.map((item, index) => {
+        const safeTitle = String(item.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const safeMarket = String(item.marketplace || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const estimated = item.isEstimatedPrice ? ' (estimated)' : '';
+        const verified = item.isPriceVerified && item.isGenuinePart;
+        const verifiedAt = item.verifiedAtUtc ? new Date(item.verifiedAtUtc).toLocaleString() : 'N/A';
+        const safeSourceType = String(item.priceSourceType || 'Unknown').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const safeSourceText = String(item.priceSourceText || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const images = Array.isArray(item.imageUrls) && item.imageUrls.length > 0
+          ? item.imageUrls.slice(0, 3)
+          : [item.imageUrl || ''];
+        const fallbackMain = images.find((x) => !!x) || '';
+        const galleryId = `gallery-${index}`;
+        const thumbs = images.map((url, imageIndex) => {
+          const safeImageUrl = String(url || '').replace(/"/g, '&quot;');
+          const activeClass = imageIndex === 0 ? ' active' : '';
+          return `<img class="thumb${activeClass}" src="${safeImageUrl}" alt="${safeTitle} photo ${imageIndex + 1}" data-target="${galleryId}" data-src="${safeImageUrl}" />`;
+        }).join('');
+
+        return `
+          <article class="listing">
+            <img id="${galleryId}" class="listing-image" src="${fallbackMain}" alt="${safeTitle}" />
+            <div class="thumb-row">${thumbs}</div>
+            <h3>${safeTitle}</h3>
+            <p class="meta">Marketplace: ${safeMarket}</p>
+            <p class="price">${usd(item.price)}${estimated}</p>
+            <span class="verify">${verified ? 'Verified genuine part' : 'Verification pending'}</span>
+            ${item.isHardToFind ? `<span class="rarity-badge">Hard-to-find match (${Number(item.rarityScore || 0)}/100)</span>` : ''}
+            <p class="meta">Verified at: ${verifiedAt}</p>
+            <p class="meta">Authenticity score: ${Number(item.authenticityScore || 0)}/100</p>
+            <p class="meta">${String(item.trustNote || '').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            <p class="meta">Source: ${safeSourceType}${safeSourceText ? ` (${safeSourceText})` : ''}</p>
+          </article>`;
+      }).join('');
+
+      const summaryHtml = qualityPromise
+        ? `<div class="panel mission"><h3>Search Commitment</h3><p>${qualityPromise}</p><p>Scanned offers: ${totalScanned} | Hard-to-find matches: ${hardMatches}</p></div>`
+        : '';
+
+      const rejectedHtml = rejectedListings.length === 0
+        ? ''
+        : `<div class="rejected-wrap">
+            <h3>Blocked Listings (${rejectedListings.length})</h3>
+            ${rejectedListings.map((item) => {
+              const safeTitle = String(item.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const safeMarket = String(item.marketplace || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const safeReason = String(item.reason || 'Rejected').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              const safeSourceType = String(item.sourceType || 'Unknown').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              return `<article class="rejected-item">
+                  <h3>${safeTitle}</h3>
+                  <p class="meta">Marketplace: ${safeMarket} | Price: ${usd(item.price)}</p>
+                  <p class="rejected-reason">Blocked: ${safeReason}</p>
+                  <p class="meta">Source: ${safeSourceType}</p>
+                </article>`;
+            }).join('')}
+          </div>`;
+
+      results.innerHTML = summaryHtml + listingsHtml + rejectedHtml;
+
+      bindGalleryThumbnails();
+    }
+
+    function bindGalleryThumbnails() {
+      document.querySelectorAll('.thumb').forEach((thumb) => {
+        thumb.addEventListener('click', () => {
+          const targetId = thumb.getAttribute('data-target');
+          const src = thumb.getAttribute('data-src') || '';
+          if (!targetId || !src) {
+            return;
+          }
+
+          const mainImage = document.getElementById(targetId);
+          if (!mainImage) {
+            return;
+          }
+
+          mainImage.src = src;
+
+          document.querySelectorAll(`.thumb[data-target="${targetId}"]`).forEach((otherThumb) => {
+            otherThumb.classList.remove('active');
+          });
+          thumb.classList.add('active');
+        });
+      });
+    }
+
+    function parseSearchQuery(text) {
+      const query = String(text || '').trim();
+      const normalized = query.replace(/\s+/g, ' ');
+      const lower = normalized.toLowerCase();
+
+      const brands = ['dell', 'asus', 'lenovo', 'hp', 'acer', 'msi', 'apple', 'samsung', 'corsair', 'evga', 'gigabyte'];
+      const partTypes = ['battery', 'motherboard', 'keyboard', 'ssd', 'ram', 'mouse', 'power supply', 'cpu cooler', 'cooler'];
+
+      const brand = brands.find((b) => lower.includes(b)) || '';
+      const partType = partTypes.find((p) => lower.includes(p)) || '';
+
+      let model = normalized;
+      if (brand) {
+        model = model.replace(new RegExp(brand, 'i'), '').trim();
+      }
+      if (partType) {
+        model = model.replace(new RegExp(partType, 'i'), '').trim();
+      }
+
+      if (!model) {
+        model = normalized;
+      }
+
+      return {
+        brand: brand ? brand.charAt(0).toUpperCase() + brand.slice(1) : '',
+        model,
+        partType: partType ? partType.replace(/\b\w/g, (c) => c.toUpperCase()) : ''
+      };
+    }
+
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = 'Searching...';
+      results.textContent = 'Loading...';
+
+      const parsed = parseSearchQuery(queryInput.value);
+
+      const payload = {
+        customerId: 1,
+        brand: parsed.brand,
+        model: parsed.model,
+        partType: parsed.partType
+      };
+
+      try {
+        const response = await fetch('/api/parts/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('rpp_token') || ''}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.status === 401) {
+          localStorage.removeItem('rpp_token');
+          localStorage.removeItem('rpp_email');
+          window.location.replace('/login.html');
+          return;
+        }
+
+        if (response.status === 402) {
+          results.innerHTML = '<p class="error">No active subscription. <a href="/profile.html">Choose a plan</a> to start searching.</p>';
+          status.textContent = 'Subscription required';
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Search request failed.');
+        }
+
+        const data = await response.json();
+        renderListings(data);
+        status.textContent = 'Done';
+      } catch (error) {
+        results.innerHTML = '<p class="error">Unable to load listings right now.</p>';
+        status.textContent = 'Error';
+      }
+    });
+
+  </script>
+</body>
+</html>

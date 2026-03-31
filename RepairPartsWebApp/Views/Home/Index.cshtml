@@ -1,0 +1,341 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Repair Parts Search";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RepairPartsPro - Component Search</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+        :root {
+            --bg: #f4f6f8;
+            --surface: #ffffff;
+            --surface-soft: #f8fafc;
+            --ink: #111827;
+            --ink-muted: #6b7280;
+            --accent: #0f766e;
+            --danger: #dc2626;
+            --border: #e5e7eb;
+            --shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+            color: var(--ink);
+            min-height: 100vh;
+            line-height: 1.5;
+            background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+        }
+
+        .container { max-width: 1140px; margin: 0 auto; padding: 28px 16px 44px; }
+
+        .hero {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-family: 'Sora', sans-serif;
+            letter-spacing: -0.02em;
+            font-size: clamp(1.55rem, 2.5vw, 2rem);
+        }
+
+        .hero p { margin: 0; color: var(--ink-muted); max-width: 760px; }
+        .status-row { margin-top: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; }
+        .status-dot.ok { background: #10b981; }
+        .status-dot.warn { background: #f59e0b; }
+        .status-dot.down { background: #dc2626; }
+        #healthText { color: var(--ink-muted); }
+
+        .content { display: grid; grid-template-columns: 300px 1fr; gap: 14px; align-items: start; }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel h2 { margin: 0 0 10px; font-size: 1rem; }
+        .field { display: grid; gap: 6px; margin-bottom: 10px; }
+        .field label { color: var(--ink-muted); font-size: 0.9rem; }
+
+        input, select {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface-soft);
+            color: var(--ink);
+            padding: 9px 10px;
+            font: inherit;
+            min-height: 40px;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            min-height: 40px;
+        }
+
+        .view-switch { display: flex; gap: 8px; margin-bottom: 14px; }
+        .view-btn {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface-soft);
+            color: var(--ink-muted);
+            padding: 8px 12px;
+            cursor: pointer;
+            min-height: 40px;
+        }
+        .view-btn.active { color: var(--ink); border-color: #cbd5e1; background: #ffffff; }
+
+        .results-header { margin-bottom: 12px; }
+        .results-header h2 { margin: 0; }
+        .results-header p { margin: 4px 0 0; color: var(--ink-muted); }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .card-content { display: grid; grid-template-columns: 230px 1fr; gap: 14px; }
+        .image-wrap { position: relative; border-radius: 8px; overflow: hidden; background: #eef2f7; min-height: 170px; }
+        .part-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .part-image-fallback { width: 100%; height: 100%; min-height: 170px; display: flex; align-items: center; justify-content: center; color: #6b7280; }
+
+        .img-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            background: rgba(17, 24, 39, 0.65);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+        }
+        .img-nav.left { left: 8px; }
+        .img-nav.right { right: 8px; }
+        .img-nav[disabled] { opacity: 0.4; cursor: default; }
+        .img-count { position: absolute; right: 8px; bottom: 8px; background: rgba(17, 24, 39, 0.65); padding: 2px 8px; border-radius: 99px; font-size: 0.8rem; }
+
+        .card-title-row { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+        .card-title { font-weight: 700; }
+        .market-badge { padding: 2px 8px; border-radius: 99px; color: #fff; font-size: 0.8rem; }
+        .price { font-size: 1.2rem; font-weight: 700; margin: 8px 0; }
+        .seller { color: var(--ink-muted); margin-bottom: 8px; }
+        .best { color: #0f766e; font-weight: 700; margin-bottom: 8px; }
+        .meta { margin: 8px 0; word-break: break-word; color: #4b5563; }
+        .meta strong { color: #111827; }
+
+        .view-details-btn,
+        .blacklist-btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 8px;
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            min-height: 40px;
+        }
+        .view-details-btn { background: #0f766e; color: #fff; border: 1px solid #0f766e; }
+        .blacklist-btn { border: 1px solid #fecaca; background: #fff5f5; color: #991b1b; cursor: pointer; }
+
+        .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+        .result-table { width: 100%; border-collapse: collapse; }
+        .result-table th, .result-table td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; }
+        .result-table th { color: var(--ink-muted); font-weight: 600; font-size: 0.86rem; }
+        .table-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; }
+
+        .loading, .error, .empty {
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #ffffff;
+        }
+        .loading { color: #0f766e; }
+        .error { color: #991b1b; background: #fff5f5; border-color: #fecaca; }
+        .empty { color: var(--ink-muted); }
+
+        .billing-section { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(120, 162, 255, 0.2); }
+        .billing-status { color: var(--ink-muted); font-size: 0.87rem; margin: 6px 0 10px; }
+        .plan-list { display: grid; gap: 8px; }
+        .plan-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface-soft);
+            padding: 10px;
+        }
+        .plan-name { font-weight: 700; color: var(--ink); }
+        .plan-meta { color: var(--ink-muted); font-size: 0.85rem; margin-top: 2px; }
+        .plan-price { font-size: 1.1rem; font-weight: 700; margin: 6px 0; }
+        .plan-btn {
+            width: 100%;
+            border: 1px solid #0f766e;
+            border-radius: 8px;
+            background: #0f766e;
+            color: #ffffff;
+            font-weight: 600;
+            min-height: 38px;
+            cursor: pointer;
+        }
+        .plan-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(17, 24, 39, 0.85);
+            z-index: 20;
+        }
+        .lightbox.open { display: flex; }
+        #lightboxImage { max-width: 90vw; max-height: 80vh; border-radius: 8px; }
+        .lightbox-close, .lightbox-nav {
+            position: fixed;
+            border: 0;
+            background: rgba(17, 24, 39, 0.75);
+            color: #fff;
+            width: 42px;
+            height: 42px;
+            cursor: pointer;
+        }
+        .lightbox-close { right: 18px; top: 18px; font-size: 1.3rem; }
+        .lightbox-nav.left { left: 18px; top: 50%; transform: translateY(-50%); }
+        .lightbox-nav.right { right: 18px; top: 50%; transform: translateY(-50%); }
+        .lightbox-count { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: rgba(17, 24, 39, 0.75); padding: 4px 10px; border-radius: 99px; }
+
+        @@media (max-width: 940px) {
+            .content { grid-template-columns: 1fr; }
+            .card-content { grid-template-columns: 1fr; }
+            .image-wrap { min-height: 200px; }
+        }
+
+        @@media (max-width: 640px) {
+            .container { padding: 20px 12px 40px; }
+            .hero { padding: 16px; margin-bottom: 14px; }
+            .panel { padding: 14px; }
+            .view-switch { flex-wrap: wrap; }
+            .view-btn { flex: 1 1 140px; }
+            .result-table th, .result-table td { white-space: nowrap; }
+            .lightbox-nav.left { left: 10px; }
+            .lightbox-nav.right { right: 10px; }
+            .lightbox-close { top: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>RepairPartsPro</h1>
+            <p>Find the right replacement part quickly and compare trusted listings.</p>
+            <div class="status-row">
+                <span id="healthDot" class="status-dot"></span>
+                <span id="healthText">Checking service status...</span>
+            </div>
+        </header>
+
+        <div class="content">
+            <aside class="panel">
+                <h2>Search</h2>
+                <form id="searchForm">
+                    <div class="field">
+                        <label for="customerId">Customer ID</label>
+                        <input id="customerId" type="number" value="1" min="1" />
+                    </div>
+                    <div class="field">
+                        <label for="brand">Brand</label>
+                        <input id="brand" type="text" value="Dell" required />
+                    </div>
+                    <div class="field">
+                        <label for="model">Model</label>
+                        <input id="model" type="text" value="XPS 15" required />
+                    </div>
+                    <div class="field">
+                        <label for="partType">Part Type</label>
+                        <input id="partType" type="text" value="Battery" required />
+                    </div>
+                    <button class="search-btn" type="submit">Search Listings</button>
+                </form>
+
+                <h2 style="margin-top:16px;">Filters</h2>
+                <div class="field">
+                    <label for="marketplaceFilter">Marketplace</label>
+                    <select id="marketplaceFilter">
+                        <option value="all">All</option>
+                        <option value="Amazon">Amazon</option>
+                        <option value="eBay">eBay</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="minFeedbackFilter">Minimum Seller Feedback (%)</label>
+                    <input id="minFeedbackFilter" type="number" min="0" max="100" value="0" />
+                </div>
+                <div class="field">
+                    <label for="minScoreFilter">Minimum Trust Score</label>
+                    <input id="minScoreFilter" type="number" min="0" max="5" step="0.1" value="0" />
+                </div>
+                <div class="field" style="display:flex; align-items:center; gap:8px;">
+                    <input id="bestOnlyFilter" type="checkbox" style="width:auto;" />
+                    <label for="bestOnlyFilter" style="margin:0;">Best-price listings only</label>
+                </div>
+
+                <div class="billing-section">
+                    <h2>Billing</h2>
+                    <div class="field">
+                        <label for="billingEmail">Billing Email</label>
+                        <input id="billingEmail" type="email" placeholder="finance@company.com" />
+                    </div>
+                    <div id="billingStatus" class="billing-status">Loading plans...</div>
+                    <div id="planList" class="plan-list"></div>
+                </div>
+            </aside>
+
+            <section class="panel">
+                <div class="view-switch">
+                    <button id="viewCardsBtn" type="button" class="view-btn active">Card View</button>
+                    <button id="viewTableBtn" type="button" class="view-btn">Table View</button>
+                </div>
+                <div id="results"></div>
+            </section>
+        </div>
+    </div>
+
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button id="lightboxClose" class="lightbox-close" aria-label="Close image viewer">&times;</button>
+        <button id="lightboxPrev" class="lightbox-nav left" aria-label="Previous image">&#10094;</button>
+        <img id="lightboxImage" alt="Part image" />
+        <button id="lightboxNext" class="lightbox-nav right" aria-label="Next image">&#10095;</button>
+        <div id="lightboxCount" class="lightbox-count">1/1</div>
+    </div>
+
+    <script src="/js/home-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign In — RepairPartsPro</title>
+  <style>
+    :root {
+      --bg: #0b122b;
+      --surface: #121e44;
+      --text: #e7efff;
+      --muted: #b2c2ea;
+      --border: rgba(128, 160, 232, 0.3);
+      --accent: #2f7df6;
+      --danger: #b91c1c;
+      --trace: rgba(74, 145, 255, 0.2);
+      --node: rgba(251, 191, 36, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 26%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 70% 62%, var(--node) 0 2px, transparent 2px),
+        radial-gradient(circle at 84% 18%, var(--node) 0 1.6px, transparent 1.6px),
+        radial-gradient(900px 520px at 12% 8%, rgba(47, 125, 246, 0.24), transparent 62%),
+        radial-gradient(820px 480px at 92% -4%, rgba(245, 158, 11, 0.2), transparent 58%),
+        repeating-linear-gradient(90deg, transparent 0 56px, var(--trace) 56px 58px, transparent 58px 116px),
+        repeating-linear-gradient(0deg, transparent 0 60px, var(--trace) 60px 62px, transparent 62px 120px),
+        linear-gradient(180deg, #0d1530 0%, var(--bg) 100%);
+      color: var(--text);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, transparent 22%, rgba(74, 145, 255, 0.12) 22% 24%, transparent 24% 68%, rgba(74, 145, 255, 0.12) 68% 70%, transparent 70%),
+        linear-gradient(45deg, transparent 18%, rgba(245, 158, 11, 0.1) 18% 19.5%, transparent 19.5% 82%, rgba(245, 158, 11, 0.1) 82% 83.5%, transparent 83.5%);
+      opacity: 0.34;
+      z-index: 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      z-index: 1;
+      margin: 20px 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #2f7df6, #f59e0b);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .brand-icon svg { width: 20px; height: 20px; fill: #fff; }
+
+    .brand-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 1.45rem;
+    }
+
+    .sub {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      min-height: 40px;
+      padding: 9px 12px;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #182854;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 2px 0 10px;
+      color: var(--muted);
+      font-size: 0.84rem;
+      user-select: none;
+    }
+
+    .remember-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: #2f7df6;
+      min-height: 16px;
+      padding: 0;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      border: none;
+      background: linear-gradient(105deg, #2f7df6, #f59e0b);
+      color: #fff;
+      border-radius: 8px;
+      min-height: 42px;
+      font: inherit;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.15s;
+    }
+
+    button[type="submit"]:hover { opacity: 0.9; }
+    button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .error-msg {
+      color: #fecaca;
+      font-size: 0.87rem;
+      margin: 10px 0 0;
+      min-height: 20px;
+    }
+
+    .footer-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .footer-link a { color: #93c5fd; text-decoration: none; }
+    .footer-link a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.18L20 8.5v7L12 19.82 4 15.5v-7L12 4.18z"/></svg>
+      </div>
+      <span class="brand-name">RepairPartsPro</span>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to search genuine repair parts.</p>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" name="email" autocomplete="email" placeholder="you@example.com" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required />
+      </div>
+      <label class="remember-row" for="rememberMe">
+        <input id="rememberMe" type="checkbox" name="rememberMe" />
+        Remember this account for 30 days
+      </label>
+      <p style="margin:0 0 8px;font-size:0.84rem;"><a href="/forgot-password.html" style="color:#93c5fd;">Forgot password?</a></p>
+      <button type="submit" id="submitBtn">Sign in</button>
+      <p class="error-msg" id="errorMsg" role="alert" aria-live="polite"></p>
+    </form>
+
+    <p class="footer-link">
+      Don't have an account? <a href="/signup.html">Create one</a>
+    </p>
+    <p class="footer-link" style="margin-top:8px;">
+      <a href="/privacy.html">Privacy</a> | <a href="/terms.html">Terms</a> | <a href="/contact.html">Contact</a>
+    </p>
+  </div>
+
+  <script>
+    (function () {
+      if (localStorage.getItem('rpp_token')) {
+        window.location.replace('/');
+        return;
+      }
+
+      const form = document.getElementById('loginForm');
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+      const rememberMeInput = document.getElementById('rememberMe');
+      const submitBtn = document.getElementById('submitBtn');
+      const errorMsg = document.getElementById('errorMsg');
+
+      const rememberedEmail = localStorage.getItem('rpp_remember_email');
+      if (rememberedEmail) {
+        emailInput.value = rememberedEmail;
+        rememberMeInput.checked = true;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorMsg.textContent = '';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in…';
+
+        try {
+          const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: emailInput.value.trim(),
+              password: passwordInput.value,
+              rememberMe: rememberMeInput.checked
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            localStorage.setItem('rpp_token', data.token);
+            localStorage.setItem('rpp_email', data.email);
+
+            if (rememberMeInput.checked) {
+              localStorage.setItem('rpp_remember_email', data.email);
+            } else {
+              localStorage.removeItem('rpp_remember_email');
+            }
+
+            window.location.replace('/');
+          } else if (res.status === 400) {
+            const body = await res.json();
+            errorMsg.textContent = body.error || 'Invalid request.';
+          } else if (res.status === 429) {
+            const body = await res.json().catch(() => ({}));
+            const retry = Number(body.retryAfterSeconds || 0);
+            errorMsg.textContent = retry > 0
+              ? `${body.error || 'Too many sign-in attempts.'} Retry in ${retry} seconds.`
+              : (body.error || 'Too many sign-in attempts. Please wait and try again.');
+          } else if (res.status === 401) {
+            errorMsg.textContent = 'Invalid email or password.';
+          } else {
+            errorMsg.textContent = 'Something went wrong. Please try again.';
+          }
+        } catch {
+          errorMsg.textContent = 'Unable to connect. Check your internet connection.';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign in';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

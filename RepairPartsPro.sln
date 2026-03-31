@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairPartsProWeb", "RepairPartsProWeb.csproj", "{FB126722-CE30-D389-BDAE-95B8F9DBA4C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepairPartsPro.Tests", "RepairPartsPro.Tests\RepairPartsPro.Tests.csproj", "{8F1200B7-6E79-4A3F-B5E7-3BC1944C36A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +16,10 @@ Global
 		{FB126722-CE30-D389-BDAE-95B8F9DBA4C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB126722-CE30-D389-BDAE-95B8F9DBA4C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB126722-CE30-D389-BDAE-95B8F9DBA4C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F1200B7-6E79-4A3F-B5E7-3BC1944C36A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F1200B7-6E79-4A3F-B5E7-3BC1944C36A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F1200B7-6E79-4A3F-B5E7-3BC1944C36A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F1200B7-6E79-4A3F-B5E7-3BC1944C36A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

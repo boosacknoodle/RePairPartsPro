@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Analytics - RepairPartsPro</title>
+  <style>
+    :root { --bg:#0b122b; --surface:#121e44; --text:#e7efff; --muted:#b2c2ea; --border:rgba(128,160,232,.3); --accent:#2f7df6; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(180deg,#0d1530 0%,var(--bg) 100%); color:var(--text); }
+    .wrap { max-width:960px; margin:0 auto; padding:24px 14px 40px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+    .link { border:1px solid var(--border); color:var(--muted); text-decoration:none; border-radius:8px; padding:8px 10px; font-size:.86rem; }
+    .link:hover { border-color:#93c5fd; color:#93c5fd; }
+    .panel { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:12px; }
+    .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .metric { background:#182854; border:1px solid var(--border); border-radius:8px; padding:12px; }
+    .metric .k { font-size:1.45rem; font-weight:800; }
+    .metric .l { color:var(--muted); font-size:.8rem; }
+    table { width:100%; border-collapse:collapse; }
+    th,td { text-align:left; padding:8px; border-bottom:1px solid var(--border); }
+    th { color:var(--muted); font-size:.85rem; }
+    @media (max-width:760px) { .grid { grid-template-columns:1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="top">
+      <h1 style="margin:0;font-size:1.3rem;">Search Analytics</h1>
+      <div style="display:flex;gap:8px;">
+        <a class="link" href="/">Search</a>
+        <a class="link" href="/profile.html">Profile</a>
+      </div>
+    </div>
+
+    <section class="panel">
+      <label for="days" style="color:var(--muted);font-size:.85rem;">Window (days)</label>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+        <input id="days" type="number" min="1" max="180" value="30" style="width:90px;border:1px solid var(--border);border-radius:8px;background:#182854;color:var(--text);padding:8px;" />
+        <button id="refreshBtn" style="border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700;">Refresh</button>
+        <span id="status" style="color:var(--muted);font-size:.88rem;">Ready</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="grid" id="metrics"></div>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin:0 0 10px;font-size:1rem;">Top Search Queries</h2>
+      <table>
+        <thead><tr><th>Query</th><th>Count</th></tr></thead>
+        <tbody id="topRows"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem('rpp_token');
+    if (!token) { window.location.replace('/login.html'); }
+
+    const metricsEl = document.getElementById('metrics');
+    const rowsEl = document.getElementById('topRows');
+    const statusEl = document.getElementById('status');
+
+    function metric(label, value) {
+      return `<article class="metric"><div class="k">${value}</div><div class="l">${label}</div></article>`;
+    }
+
+    async function load() {
+      const days = Math.max(1, Number(document.getElementById('days').value || 30));
+      statusEl.textContent = 'Loading...';
+      try {
+        const res = await fetch(`/api/analytics/summary?days=${days}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.status === 401) {
+          localStorage.removeItem('rpp_token');
+          localStorage.removeItem('rpp_email');
+          window.location.replace('/login.html');
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to load analytics');
+
+        const data = await res.json();
+        metricsEl.innerHTML = [
+          metric('Total Searches', data.totalSearches || 0),
+          metric('No-result Searches', data.noResultSearches || 0),
+          metric('Unique Users', data.uniqueUsers || 0),
+          metric('Plan Click Events', data.planClickEvents || 0)
+        ].join('');
+
+        const top = Array.isArray(data.topSearches) ? data.topSearches : [];
+        rowsEl.innerHTML = top.length
+          ? top.map(x => `<tr><td>${String(x.queryText || '').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td><td>${Number(x.count || 0)}</td></tr>`).join('')
+          : '<tr><td colspan="2" style="color:#b2c2ea;">No search data yet.</td></tr>';
+
+        statusEl.textContent = `Loaded ${days}-day window`;
+      } catch {
+        statusEl.textContent = 'Error loading analytics';
+      }
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', load);
+    load();
+  </script>
+</body>
+</html>
