@@ -15,7 +15,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 8080
 
 RUN mkdir -p /app/data
-VOLUME ["/app/data"]
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["sh", "-c", "ASPNETCORE_URLS=http://+:${PORT:-8080} dotnet RepairPartsProWeb.dll"]
